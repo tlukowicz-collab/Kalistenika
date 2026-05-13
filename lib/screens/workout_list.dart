@@ -1,0 +1,213 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../state.dart';
+import '../program.dart';
+import 'active_workout.dart';
+
+class WorkoutListScreen extends StatelessWidget {
+  const WorkoutListScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF121212),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text('Program treningowy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (ctx, weekIdx) => _WeekSection(week: weekIdx + 1, currentWeek: state.currentWeek, currentDow: state.currentDayOfWeek),
+                childCount: 6,
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WeekSection extends StatefulWidget {
+  final int week;
+  final int currentWeek;
+  final int currentDow;
+  const _WeekSection({required this.week, required this.currentWeek, required this.currentDow});
+
+  @override
+  State<_WeekSection> createState() => _WeekSectionState();
+}
+
+class _WeekSectionState extends State<_WeekSection> {
+  late bool _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.week == widget.currentWeek;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isCurrentWeek = widget.week == widget.currentWeek;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+          border: isCurrentWeek ? Border.all(color: const Color(0xFF00C853), width: 1.5) : null,
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => setState(() => _expanded = !_expanded),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: isCurrentWeek ? const Color(0xFF00C853) : const Color(0xFF333333),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Text('${widget.week}', style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isCurrentWeek ? Colors.black : Colors.white,
+                          fontSize: 16,
+                        )),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(weekDescription(widget.week), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                          if (isCurrentWeek)
+                            const Text('← AKTUALNY TYDZIEŃ', style: TextStyle(color: Color(0xFF00C853), fontSize: 11)),
+                        ],
+                      ),
+                    ),
+                    Icon(_expanded ? Icons.expand_less : Icons.expand_more, color: Colors.white54),
+                  ],
+                ),
+              ),
+            ),
+            if (_expanded) ...[
+              const Divider(height: 1, color: Colors.white12),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: List.generate(7, (dowIdx) {
+                    final dow = dowIdx + 1;
+                    final workout = getWorkout(widget.week, dow);
+                    final isRest = isRestDay(widget.week, dow);
+                    final isTodayHere = widget.week == widget.currentWeek && dow == widget.currentDow;
+
+                    if (isRest) {
+                      return _DayTile(
+                        dow: dow,
+                        isRest: true,
+                        isToday: isTodayHere,
+                        workout: null,
+                        onTap: null,
+                      );
+                    }
+                    if (workout == null) return const SizedBox();
+                    return _DayTile(
+                      dow: dow,
+                      isRest: false,
+                      isToday: isTodayHere,
+                      workout: workout,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ActiveWorkoutScreen(workoutDay: workout)),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DayTile extends StatelessWidget {
+  final int dow;
+  final bool isRest;
+  final bool isToday;
+  final dynamic workout;
+  final VoidCallback? onTap;
+
+  const _DayTile({required this.dow, required this.isRest, required this.isToday, required this.workout, required this.onTap});
+
+  static const _dayNames = ['', 'Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: isToday ? const Color(0xFF002D0F) : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            border: isToday ? Border.all(color: const Color(0xFF00C853), width: 1) : null,
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 36,
+                child: Text(_dayNames[dow], style: TextStyle(
+                  color: isToday ? const Color(0xFF00C853) : Colors.white54,
+                  fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 13,
+                )),
+              ),
+              if (isRest) ...[
+                const Icon(Icons.hotel, color: Colors.white30, size: 18),
+                const SizedBox(width: 8),
+                const Text('Odpoczynek', style: TextStyle(color: Colors.white30, fontSize: 14)),
+              ] else ...[
+                Text(workout.emoji, style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(workout.title, style: TextStyle(
+                    color: isToday ? Colors.white : Colors.white70,
+                    fontSize: 14,
+                    fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
+                  )),
+                ),
+                Text('~${workout.estimatedMins} min', style: const TextStyle(color: Colors.white38, fontSize: 12)),
+                if (onTap != null) ...[
+                  const SizedBox(width: 4),
+                  const Icon(Icons.play_circle_outline, color: Color(0xFF00C853), size: 20),
+                ],
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
