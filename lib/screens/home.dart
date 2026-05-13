@@ -38,7 +38,7 @@ class HomeScreen extends StatelessWidget {
               if (isRest)
                 _RestDayCard()
               else if (workout != null)
-                _WorkoutCard(workout: workout, completed: completedToday)
+                _WorkoutCard(workoutDay: workout, completed: completedToday)
               ,
               const SizedBox(height: 20),
               _TodayMealsCard(meals: meals),
