@@ -30,6 +30,7 @@ jobs:
         run: |
           flutter create --org com.kalistenia --project-name kalistenia /tmp/base
           cp -r /tmp/base/android .
+          sed -i "s/ext.kotlin_version = '[^']*'/ext.kotlin_version = '1.9.22'/" android/build.gradle
 
       - name: Install dependencies
         run: flutter pub get
