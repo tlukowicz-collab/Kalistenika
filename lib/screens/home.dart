@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
     final week = state.currentWeek;
     final dow = state.currentDayOfWeek;
     final workout = getWorkout(week, dow);
-    final meals = getMealsForDay(dow);
+    final meals = getMealsForDay(state.totalDaysElapsed);
     final isRest = isRestDay(week, dow);
     final completedToday = state.wasCompletedToday(week, dow);
 
@@ -31,7 +31,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _Header(week: week, dow: dow, daysLeft: state.daysUntilEnd),
+              _Header(week: week, dow: dow, daysLeft: state.daysUntilEnd, phase: state.currentPhase),
               const SizedBox(height: 20),
               _WeekProgress(week: week, workoutsThisWeek: state.workoutsThisWeek),
               const SizedBox(height: 20),
@@ -56,7 +56,8 @@ class _Header extends StatelessWidget {
   final int week;
   final int dow;
   final int daysLeft;
-  const _Header({required this.week, required this.dow, required this.daysLeft});
+  final int phase;
+  const _Header({required this.week, required this.dow, required this.daysLeft, required this.phase});
 
   String get _dayName {
     const names = ['', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
@@ -71,7 +72,7 @@ class _Header extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Tydzień $week / 6', style: const TextStyle(color: Color(0xFF00C853), fontWeight: FontWeight.bold, fontSize: 13)),
+            Text('Faza $phase · Tydzień $week', style: const TextStyle(color: Color(0xFF00C853), fontWeight: FontWeight.bold, fontSize: 13)),
             Text(_dayName, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white)),
           ],
         ),
@@ -84,7 +85,7 @@ class _Header extends StatelessWidget {
           child: Column(
             children: [
               Text('$daysLeft', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF00C853))),
-              const Text('dni do\nwakacji', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: Colors.grey)),
+              Text('dni do\n${phase == 1 ? "wakacji" : "końca fazy"}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 10, color: Colors.grey)),
             ],
           ),
         ),

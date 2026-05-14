@@ -21,8 +21,7 @@ class AppState extends ChangeNotifier {
   int get currentWeek {
     if (_startDate == null) return 0;
     final days = DateTime.now().difference(_startDate!).inDays;
-    final week = (days ~/ 7) + 1;
-    return week.clamp(1, 6);
+    return (days ~/ 7) + 1;
   }
 
   int get currentDayOfWeek {
@@ -36,10 +35,34 @@ class AppState extends ChangeNotifier {
     return DateTime.now().difference(_startDate!).inDays + 1;
   }
 
+  int get currentPhase {
+    final w = currentWeek;
+    if (w <= 6) return 1;
+    if (w <= 12) return 2;
+    return 3;
+  }
+
+  int get weekInPhase {
+    final w = currentWeek;
+    if (w <= 6) return w;
+    if (w <= 12) return w - 6;
+    return ((w - 13) % 12) + 1;
+  }
+
   int get daysUntilEnd {
     if (_startDate == null) return 42;
     final elapsed = DateTime.now().difference(_startDate!).inDays;
-    return (42 - elapsed).clamp(0, 42);
+    final w = currentWeek;
+    final int phaseEndDay;
+    if (w <= 6) {
+      phaseEndDay = 42;
+    } else if (w <= 12) {
+      phaseEndDay = 84;
+    } else {
+      final cyclesDone = (w - 13) ~/ 12;
+      phaseEndDay = 84 + (cyclesDone + 1) * 84;
+    }
+    return (phaseEndDay - elapsed).clamp(0, phaseEndDay);
   }
 
   double? get latestWeight => _weights.isEmpty ? null : _weights.last.kg;

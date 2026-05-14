@@ -45,34 +45,53 @@ class _ProgramProgress extends StatelessWidget {
     }
 
     final totalDays = state.totalDaysElapsed;
-    final progress = (totalDays / 42).clamp(0.0, 1.0);
+    final phase = state.currentPhase;
+    final weekInPhase = state.weekInPhase;
+    final phaseWeeks = phase == 3 ? 12 : 6;
+    final phaseProgress = (weekInPhase / phaseWeeks).clamp(0.0, 1.0);
+    final phaseLabel = phase == 1 ? 'Faza 1 – Podstawy' : phase == 2 ? 'Faza 2 – Zaawansowana' : 'Faza 3 – Elitarna';
 
     return _Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Program 6 tygodni', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(phaseLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00C853).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF00C853), width: 1),
+                ),
+                child: Text('Faza $phase', style: const TextStyle(color: Color(0xFF00C853), fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
           const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _BigStat('Tydzień', '${state.currentWeek}/6'),
-              _BigStat('Dzień', '$totalDays/42'),
-              _BigStat('Do wakacji', '${state.daysUntilEnd} dni'),
+              _BigStat('Tydzień', '${state.currentWeek}'),
+              _BigStat('Dzień', '$totalDays'),
+              _BigStat(phase == 1 ? 'Do wakacji' : 'Koniec fazy', '${state.daysUntilEnd} dni'),
             ],
           ),
           const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
-              value: progress,
+              value: phaseProgress,
               minHeight: 10,
               backgroundColor: const Color(0xFF333333),
               valueColor: const AlwaysStoppedAnimation(Color(0xFF00C853)),
             ),
           ),
           const SizedBox(height: 6),
-          Text('${(progress * 100).round()}% programu ukończone', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text('Tydzień $weekInPhase z $phaseWeeks w Fazie $phase (${(phaseProgress * 100).round()}%)',
+              style: const TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );

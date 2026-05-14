@@ -11,6 +11,7 @@ class DietPage extends StatefulWidget {
 
 class _DietPageState extends State<DietPage> with SingleTickerProviderStateMixin {
   late TabController _tabs;
+  int _selectedWeek = 0;
   int _selectedDay = 0;
 
   @override
@@ -57,8 +58,13 @@ class _DietPageState extends State<DietPage> with SingleTickerProviderStateMixin
               child: TabBarView(
                 controller: _tabs,
                 children: [
-                  _MealPlanTab(selectedDay: _selectedDay, onDayChanged: (d) => setState(() => _selectedDay = d)),
-                  _RecipesTab(selectedDay: _selectedDay),
+                  _MealPlanTab(
+                    selectedWeek: _selectedWeek,
+                    selectedDay: _selectedDay,
+                    onWeekChanged: (w) => setState(() => _selectedWeek = w),
+                    onDayChanged: (d) => setState(() => _selectedDay = d),
+                  ),
+                  _RecipesTab(selectedWeek: _selectedWeek, selectedDay: _selectedDay),
                 ],
               ),
             ),
@@ -81,7 +87,7 @@ class _InfoBanner extends StatelessWidget {
           Text('🥗', style: TextStyle(fontSize: 20)),
           SizedBox(width: 10),
           Expanded(child: Text(
-            'Dieta dla rekompu: umiarkowany deficyt + wysokie białko.\nJadłospis powtarza się co tydzień.',
+            'Dieta dla rekompu: umiarkowany deficyt + wysokie białko.\n28 unikalnych dni – cykl powtarza się co 4 tygodnie.',
             style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.4),
           )),
         ],
@@ -91,18 +97,60 @@ class _InfoBanner extends StatelessWidget {
 }
 
 class _MealPlanTab extends StatelessWidget {
+  final int selectedWeek;
   final int selectedDay;
+  final ValueChanged<int> onWeekChanged;
   final ValueChanged<int> onDayChanged;
-  const _MealPlanTab({required this.selectedDay, required this.onDayChanged});
+  const _MealPlanTab({
+    required this.selectedWeek,
+    required this.selectedDay,
+    required this.onWeekChanged,
+    required this.onDayChanged,
+  });
 
   static const _dayShort = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd'];
 
   @override
   Widget build(BuildContext context) {
-    final meals = weeklyMeals[selectedDay];
+    final meals = weeklyMeals[selectedWeek * 7 + selectedDay];
     return Column(
       children: [
         const SizedBox(height: 12),
+        SizedBox(
+          height: 36,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: 4,
+            itemBuilder: (_, i) {
+              final selected = i == selectedWeek;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () => onWeekChanged(i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: selected ? const Color(0xFF00C853).withOpacity(0.15) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: selected ? const Color(0xFF00C853) : Colors.white24,
+                        width: 1,
+                      ),
+                    ),
+                    child: Text('Tydz. ${i + 1}', style: TextStyle(
+                      color: selected ? const Color(0xFF00C853) : Colors.white54,
+                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 12,
+                    )),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
         SizedBox(
           height: 44,
           child: ListView.builder(
@@ -309,12 +357,13 @@ class _Macro extends StatelessWidget {
 }
 
 class _RecipesTab extends StatelessWidget {
+  final int selectedWeek;
   final int selectedDay;
-  const _RecipesTab({required this.selectedDay});
+  const _RecipesTab({required this.selectedWeek, required this.selectedDay});
 
   @override
   Widget build(BuildContext context) {
-    final meals = weeklyMeals[selectedDay];
+    final meals = weeklyMeals[selectedWeek * 7 + selectedDay];
     final allMeals = [meals.breakfast, meals.lunch, meals.dinner, meals.snack];
     final emojis = ['☀️', '🍽️', '🌙', '🍎'];
 
