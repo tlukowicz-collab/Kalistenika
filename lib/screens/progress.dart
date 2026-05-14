@@ -340,7 +340,7 @@ class _ResetButton extends StatelessWidget {
           ],
         ),
       ),
-      child: const Text('Resetuj program', style: TextStyle(color: Colors.red54)),
+      child: const Text('Resetuj program', style: TextStyle(color: Colors.redAccent)),
     );
   }
 }
