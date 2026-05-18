@@ -21,6 +21,8 @@ class ProgressScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _WeightSection(state: state),
             const SizedBox(height: 16),
+            _MeasurementsSection(state: state),
+            const SizedBox(height: 16),
             _WorkoutHistory(state: state),
             const SizedBox(height: 16),
             if (state.programStarted) _ResetButton(),
@@ -283,6 +285,139 @@ class _ChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ChartPainter old) => true;
+}
+
+class _MeasurementsSection extends StatefulWidget {
+  final AppState state;
+  const _MeasurementsSection({required this.state});
+
+  @override
+  State<_MeasurementsSection> createState() => _MeasurementsSectionState();
+}
+
+class _MeasurementsSectionState extends State<_MeasurementsSection> {
+  final _chestCtrl = TextEditingController();
+  final _waistCtrl = TextEditingController();
+  final _armCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _chestCtrl.dispose();
+    _waistCtrl.dispose();
+    _armCtrl.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final chest = double.tryParse(_chestCtrl.text.replaceAll(',', '.'));
+    final waist = double.tryParse(_waistCtrl.text.replaceAll(',', '.'));
+    final arm = double.tryParse(_armCtrl.text.replaceAll(',', '.'));
+    if (chest == null || waist == null || arm == null ||
+        chest < 50 || chest > 200 || waist < 40 || waist > 200 || arm < 15 || arm > 80) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Podaj prawidłowe obwody w cm'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    widget.state.logMeasurement(chest, waist, arm);
+    _chestCtrl.clear();
+    _waistCtrl.clear();
+    _armCtrl.clear();
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Pomiary zapisane ✓'), backgroundColor: Color(0xFF00C853)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
+    final first = state.firstMeasurement;
+    final latest = state.latestMeasurement;
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Obwody ciała', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 4),
+          const Text('Mierz rano, na czczo, co 2 tygodnie', style: TextStyle(color: Colors.white38, fontSize: 11)),
+          const SizedBox(height: 14),
+          if (first != null && latest != null) ...[
+            Row(
+              children: [
+                Expanded(child: _MeasCol('Klatka', first.chest, latest.chest, lowerIsBetter: false)),
+                Expanded(child: _MeasCol('Talia', first.waist, latest.waist, lowerIsBetter: true)),
+                Expanded(child: _MeasCol('Ramię', first.arm, latest.arm, lowerIsBetter: false)),
+              ],
+            ),
+            const SizedBox(height: 14),
+          ],
+          Row(
+            children: [
+              Expanded(child: _measField(_chestCtrl, 'Klatka (cm)')),
+              const SizedBox(width: 8),
+              Expanded(child: _measField(_waistCtrl, 'Talia (cm)')),
+              const SizedBox(width: 8),
+              Expanded(child: _measField(_armCtrl, 'Ramię (cm)')),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF00C853),
+                foregroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: _submit,
+              child: const Text('Zapisz pomiary', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _measField(TextEditingController ctrl, String hint) => TextField(
+    controller: ctrl,
+    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+    style: const TextStyle(color: Colors.white, fontSize: 13),
+    decoration: InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Colors.white38, fontSize: 12),
+      filled: true,
+      fillColor: const Color(0xFF2A2A2A),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+    ),
+  );
+}
+
+class _MeasCol extends StatelessWidget {
+  final String label;
+  final double first;
+  final double latest;
+  final bool lowerIsBetter;
+  const _MeasCol(this.label, this.first, this.latest, {required this.lowerIsBetter});
+
+  @override
+  Widget build(BuildContext context) {
+    final diff = latest - first;
+    final improved = lowerIsBetter ? diff < 0 : diff > 0;
+    final diffStr = '${diff > 0 ? '+' : ''}${diff.toStringAsFixed(1)}';
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 11)),
+        Text('${latest.toStringAsFixed(1)} cm', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(diffStr, style: TextStyle(
+          color: improved ? const Color(0xFF00C853) : diff == 0 ? Colors.grey : Colors.orange,
+          fontSize: 12, fontWeight: FontWeight.bold,
+        )),
+      ],
+    );
+  }
 }
 
 class _WorkoutHistory extends StatelessWidget {

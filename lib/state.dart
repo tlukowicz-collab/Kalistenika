@@ -7,14 +7,17 @@ class AppState extends ChangeNotifier {
   static const _keyStartDate = 'start_date';
   static const _keyWorkouts = 'workouts';
   static const _keyWeights = 'weights';
+  static const _keyMeasurements = 'measurements';
 
   DateTime? _startDate;
   List<WorkoutRecord> _workouts = [];
   List<WeightRecord> _weights = [];
+  List<MeasurementRecord> _measurements = [];
 
   DateTime? get startDate => _startDate;
   List<WorkoutRecord> get workouts => List.unmodifiable(_workouts);
   List<WeightRecord> get weights => List.unmodifiable(_weights);
+  List<MeasurementRecord> get measurements => List.unmodifiable(_measurements);
 
   bool get programStarted => _startDate != null;
 
@@ -72,6 +75,9 @@ class AppState extends ChangeNotifier {
     return _weights.last.kg - _weights.first.kg;
   }
 
+  MeasurementRecord? get latestMeasurement => _measurements.isEmpty ? null : _measurements.last;
+  MeasurementRecord? get firstMeasurement => _measurements.isEmpty ? null : _measurements.first;
+
   int get workoutsThisWeek {
     if (_startDate == null) return 0;
     final weekStart = _startDate!.add(Duration(days: (currentWeek - 1) * 7));
@@ -92,9 +98,7 @@ class AppState extends ChangeNotifier {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     final dateStr = prefs.getString(_keyStartDate);
-    if (dateStr != null) {
-      _startDate = DateTime.parse(dateStr);
-    }
+    if (dateStr != null) _startDate = DateTime.parse(dateStr);
     final workoutsJson = prefs.getStringList(_keyWorkouts) ?? [];
     _workouts = workoutsJson
         .map((s) => WorkoutRecord.fromJson(jsonDecode(s) as Map<String, dynamic>))
@@ -102,6 +106,10 @@ class AppState extends ChangeNotifier {
     final weightsJson = prefs.getStringList(_keyWeights) ?? [];
     _weights = weightsJson
         .map((s) => WeightRecord.fromJson(jsonDecode(s) as Map<String, dynamic>))
+        .toList();
+    final measurementsJson = prefs.getStringList(_keyMeasurements) ?? [];
+    _measurements = measurementsJson
+        .map((s) => MeasurementRecord.fromJson(jsonDecode(s) as Map<String, dynamic>))
         .toList();
     notifyListeners();
   }
@@ -129,14 +137,24 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> logMeasurement(double chest, double waist, double arm) async {
+    final record = MeasurementRecord(date: DateTime.now(), chest: chest, waist: waist, arm: arm);
+    _measurements.add(record);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_keyMeasurements, _measurements.map((m) => jsonEncode(m.toJson())).toList());
+    notifyListeners();
+  }
+
   Future<void> resetProgram() async {
     _startDate = null;
     _workouts = [];
     _weights = [];
+    _measurements = [];
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyStartDate);
     await prefs.remove(_keyWorkouts);
     await prefs.remove(_keyWeights);
+    await prefs.remove(_keyMeasurements);
     notifyListeners();
   }
 }

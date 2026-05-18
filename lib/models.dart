@@ -63,6 +63,21 @@ class DayMeals {
   int get totalProtein => breakfast.protein + lunch.protein + dinner.protein + snack.protein;
 }
 
+class MeasurementRecord {
+  final DateTime date;
+  final double chest;
+  final double waist;
+  final double arm;
+  MeasurementRecord({required this.date, required this.chest, required this.waist, required this.arm});
+  Map<String, dynamic> toJson() => {'date': date.toIso8601String(), 'chest': chest, 'waist': waist, 'arm': arm};
+  factory MeasurementRecord.fromJson(Map<String, dynamic> j) => MeasurementRecord(
+    date: DateTime.parse(j['date'] as String),
+    chest: (j['chest'] as num).toDouble(),
+    waist: (j['waist'] as num).toDouble(),
+    arm: (j['arm'] as num).toDouble(),
+  );
+}
+
 class WorkoutRecord {
   final DateTime date;
   final String title;
