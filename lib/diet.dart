@@ -564,7 +564,7 @@ const _gruszkaSerChudy = Meal(name: 'Gruszka z twarogiem', type: 'Przekąska', k
 const _koktajlBanMleko = Meal(name: 'Koktajl bananowy', type: 'Przekąska', kcal: 220, protein: 15, prepMins: 3, ingredients: [Ingredient('Banan', '1 sztuka'), Ingredient('Mleko 2%', '200 ml'), Ingredient('Twaróg', '50 g')], steps: ['Zmiksuj.']);
 const _marchewSeler = Meal(name: 'Marchewka z sosem jogurtowym', type: 'Przekąska', kcal: 150, protein: 8, prepMins: 3, ingredients: [Ingredient('Marchew', '2 sztuki'), Ingredient('Jogurt naturalny', '100 g'), Ingredient('Czosnek, koperek', 'do smaku')], steps: ['Zetrzyj czosnek do jogurtu.', 'Marchew pokrój w słupki.']);
 const _hummusChleb = Meal(name: 'Hummus z pieczywem', type: 'Przekąska', kcal: 220, protein: 8, prepMins: 2, ingredients: [Ingredient('Hummus', '60 g'), Ingredient('Pieczywo razowe', '2 kromki')], steps: ['Posmaruj chleb hummusem.']);
-const _jabłkoMasloOrzech = Meal(name: 'Jabłko z masłem orzechowym', type: 'Przekąska', kcal: 240, protein: 7, prepMins: 2, ingredients: [Ingredient('Jabłko', '1 sztuka'), Ingredient('Masło orzechowe', '1.5 łyżki')], steps: ['Pokrój jabłko. Maczaj.']);
+const _jablkoMasloOrzech = Meal(name: 'Jabłko z masłem orzechowym', type: 'Przekąska', kcal: 240, protein: 7, prepMins: 2, ingredients: [Ingredient('Jabłko', '1 sztuka'), Ingredient('Masło orzechowe', '1.5 łyżki')], steps: ['Pokrój jabłko. Maczaj.']);
 const _jogurtSiemie = Meal(name: 'Jogurt z siemieniem lnianym', type: 'Przekąska', kcal: 190, protein: 12, prepMins: 2, ingredients: [Ingredient('Jogurt naturalny 2%', '200 g'), Ingredient('Siemię lniane', '1 łyżka'), Ingredient('Miód', '1 łyżeczka')], steps: ['Wymieszaj.']);
 const _twarogWarzywaS = Meal(name: 'Twaróg z papryką', type: 'Przekąska', kcal: 180, protein: 20, prepMins: 3, ingredients: [Ingredient('Twaróg chudy', '150 g'), Ingredient('Papryka', '½ sztuki'), Ingredient('Ogórek', '¼ sztuki')], steps: ['Pokrój warzywa. Jedz z twarogiem.']);
 const _orzechyBrazyl = Meal(name: 'Orzechy z bananem', type: 'Przekąska', kcal: 250, protein: 6, prepMins: 1, ingredients: [Ingredient('Orzechy brazylijskie', '20 g'), Ingredient('Banan', '1 sztuka')], steps: ['Gotowe.']);
@@ -600,7 +600,7 @@ const List<DayMeals> weeklyMeals = [
   DayMeals(dayName: 'Niedziela', breakfast: _tostTunczyk, lunch: _tortillaKurczak, dinner: _rybaDuszona, snack: _marchewSeler),
   // TYDZIEŃ 4
   DayMeals(dayName: 'Poniedziałek', breakfast: _ryzoMleko, lunch: _pieczonePiersi, dinner: _salatkaGrecka, snack: _hummusChleb),
-  DayMeals(dayName: 'Wtorek', breakfast: _jajecznicaSzynka, lunch: _zupaSoczewica2, dinner: _kremPapryki, snack: _jabłkoMasloOrzech),
+  DayMeals(dayName: 'Wtorek', breakfast: _jajecznicaSzynka, lunch: _zupaSoczewica2, dinner: _kremPapryki, snack: _jablkoMasloOrzech),
   DayMeals(dayName: 'Środa', breakfast: _owsiankaDaktyle, lunch: _lososTeriyaki, dinner: _wrapKurczakAwokado, snack: _jogurtSiemie),
   DayMeals(dayName: 'Czwartek', breakfast: _twarogWarzywa, lunch: _kurczakFasola, dinner: _omletLosos, snack: _twarogWarzywaS),
   DayMeals(dayName: 'Piątek', breakfast: _gofryOwsiane, lunch: _klopsiki, dinner: _kapustaMielona, snack: _orzechyBrazyl),
