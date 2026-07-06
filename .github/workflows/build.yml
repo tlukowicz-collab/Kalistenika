@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,3 +49,12 @@ jobs:
           name: Kalistenika-APK
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Kalistenika – najnowsza wersja
+          body: Najnowszy build APK. Pobierz plik poniżej i zainstaluj na Androidzie.
+          prerelease: false
+          files: build/app/outputs/flutter-apk/app-release.apk
