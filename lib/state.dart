@@ -137,6 +137,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> startProgramFromWeek(int week) async {
+    _startDate = DateTime.now().subtract(Duration(days: (week - 1) * 7));
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyStartDate, _startDate!.toIso8601String());
+    notifyListeners();
+  }
+
   Future<void> logWorkout(String title, int durationMins) async {
     final record = WorkoutRecord(date: DateTime.now(), title: title, durationMins: durationMins);
     _workouts.add(record);

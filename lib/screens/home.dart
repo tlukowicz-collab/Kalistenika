@@ -358,12 +358,14 @@ class _WelcomeScreen extends StatelessWidget {
             children: [
               const Text('💪', style: TextStyle(fontSize: 72)),
               const SizedBox(height: 24),
-              const Text('Kalistenia\n6 tygodni do wakacji',
+              const Text('Kalistenia – 3 fazy',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, height: 1.3)),
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 16),
-              const Text('Program stworzony dla Ciebie:\n• Ćwiczenia w domu bez sprzętu\n• Dieta ~2000 kcal, 150g białka/dzień\n• Proste przepisy, max 30-40 min gotowania\n• Widoczna sylwetka na wakacjach',
-                  style: TextStyle(color: Colors.white70, fontSize: 15, height: 1.6)),
+              const Text(
+                '• Faza 1 (tyg. 1–6): podstawy\n• Faza 2 (tyg. 7–12): archer, pistol, L-sit\n• Faza 3 (tyg. 13+): jednoramienna, muscle-up\n\nDieta ~2000 kcal, 150g białka/dzień',
+                style: TextStyle(color: Colors.white70, fontSize: 15, height: 1.7),
+              ),
               const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
@@ -371,11 +373,39 @@ class _WelcomeScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00C853),
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   ),
                   onPressed: () => context.read<AppState>().startProgram(),
-                  child: const Text('ZACZYNAM DZIŚ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: const Text('ZACZYNAM OD FAZY 1', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF00C853)),
+                    foregroundColor: const Color(0xFF00C853),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () => context.read<AppState>().startProgramFromWeek(7),
+                  child: const Text('ZACZYNAM OD FAZY 2 (tyg. 7)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white38),
+                    foregroundColor: Colors.white54,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () => context.read<AppState>().startProgramFromWeek(13),
+                  child: const Text('ZACZYNAM OD FAZY 3 (tyg. 13)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],

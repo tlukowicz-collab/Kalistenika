@@ -25,6 +25,7 @@ class ProgressScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _WorkoutHistory(state: state),
             const SizedBox(height: 16),
+            if (state.programStarted) _ChangePhaseButton(),
             if (state.programStarted) _ResetButton(),
           ],
         ),
@@ -469,6 +470,39 @@ class _WorkoutHistory extends StatelessWidget {
   String _formatDate(DateTime d) {
     const months = ['', 'sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
     return '${d.day} ${months[d.month]} ${d.year}';
+  }
+}
+
+class _ChangePhaseButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      icon: const Icon(Icons.swap_horiz, color: Color(0xFF00C853)),
+      label: const Text('Zmień fazę startu', style: TextStyle(color: Color(0xFF00C853))),
+      onPressed: () => showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text('Wybierz punkt startu', style: TextStyle(color: Colors.white)),
+          content: const Text('Historia treningów i wagi zostanie zachowana.', style: TextStyle(color: Colors.white70)),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Anuluj')),
+            TextButton(
+              onPressed: () { Navigator.pop(context); context.read<AppState>().startProgramFromWeek(1); },
+              child: const Text('Faza 1 (tyg. 1)'),
+            ),
+            TextButton(
+              onPressed: () { Navigator.pop(context); context.read<AppState>().startProgramFromWeek(7); },
+              child: const Text('Faza 2 (tyg. 7)', style: TextStyle(color: Color(0xFF00C853), fontWeight: FontWeight.bold)),
+            ),
+            TextButton(
+              onPressed: () { Navigator.pop(context); context.read<AppState>().startProgramFromWeek(13); },
+              child: const Text('Faza 3 (tyg. 13)'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

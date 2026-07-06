@@ -599,7 +599,7 @@ class _FinishedScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    onPressed: () { Navigator.pop(context); Navigator.pop(context); },
+                    onPressed: () => Navigator.of(context).pop(),
                     child: const Text('WRÓĆ DO GŁÓWNEJ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ),
                 ),
