@@ -358,7 +358,7 @@ class _WelcomeScreen extends StatelessWidget {
             children: [
               const Text('💪', style: TextStyle(fontSize: 72)),
               const SizedBox(height: 24),
-              const Text('Kalistenia – 3 fazy',
+              const Text('Kalistenika – 3 fazy',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 16),

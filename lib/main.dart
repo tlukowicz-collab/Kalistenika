@@ -22,7 +22,7 @@ class KastaniaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kalistenia 6 tygodni',
+      title: 'Kalistenika',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
