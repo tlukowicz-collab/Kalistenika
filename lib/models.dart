@@ -3,7 +3,8 @@ class Exercise {
   final String muscles;
   final String description;
   final String tip;
-  const Exercise({required this.name, required this.muscles, required this.description, required this.tip});
+  final List<String>? stages;
+  const Exercise({required this.name, required this.muscles, required this.description, required this.tip, this.stages});
 }
 
 class WorkSet {

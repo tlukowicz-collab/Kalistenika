@@ -342,25 +342,75 @@ class _ExerciseInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: const Color(0xFF1E1E1E), borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Jak wykonać:', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
-          Text(ex.description, style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4)),
-          const SizedBox(height: 10),
-          Row(
+    return Consumer<AppState>(
+      builder: (ctx, state, _) {
+        final currentStage = ex.stages != null ? state.getExerciseStage(ex.name) : -1;
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(color: const Color(0xFF1E1E1E), borderRadius: BorderRadius.circular(12)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.lightbulb_outline, color: Color(0xFFFFD700), size: 16),
-              const SizedBox(width: 6),
-              Expanded(child: Text(ex.tip, style: const TextStyle(color: Color(0xFFFFD700), fontSize: 13))),
+              const Text('Jak wykonać:', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              Text(ex.description, style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4)),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Icon(Icons.lightbulb_outline, color: Color(0xFFFFD700), size: 16),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text(ex.tip, style: const TextStyle(color: Color(0xFFFFD700), fontSize: 13))),
+                ],
+              ),
+              if (ex.stages != null) ...[
+                const SizedBox(height: 14),
+                const Divider(color: Colors.white12, height: 1),
+                const SizedBox(height: 10),
+                const Text('Twój etap:', style: TextStyle(color: Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: List.generate(ex.stages!.length, (i) {
+                    final selected = currentStage == i;
+                    return GestureDetector(
+                      onTap: () => state.setExerciseStage(ex.name, i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: selected ? const Color(0xFF00C853) : const Color(0xFF2A2A2A),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: selected ? const Color(0xFF00C853) : Colors.white24,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (selected) ...[
+                              const Icon(Icons.check, size: 13, color: Colors.black),
+                              const SizedBox(width: 4),
+                            ],
+                            Text(
+                              '${i + 1}. ${ex.stages![i]}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: selected ? Colors.black : Colors.white70,
+                                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ],
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

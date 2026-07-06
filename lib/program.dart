@@ -177,6 +177,7 @@ const lSit = Exercise(
   muscles: 'Rdzeń, zginacze biodra, tricepsy',
   description: 'Usiądź z dłońmi przy biodrach. Napnij brzuch i unoś pośladki. Zacznij od tucked L-sit (kolana przy klatce), potem prostuj nogi.',
   tip: 'Tuck L-sit przez 10s to cel na start. Najtrudniejszy element rdzenia w kalistenice.',
+  stages: ['Tucked (kolana przy klatce)', 'Pół-prostowane nogi', 'Pełny L-sit (nogi proste)'],
 );
 
 const wiszenieKolana = Exercise(
@@ -191,6 +192,7 @@ const przysiadPistolProg = Exercise(
   muscles: 'Uda, pośladki, równowaga (jednostronnie)',
   description: 'Etap 1: trzymaj ścianę. Etap 2: opuszczaj na jednej nodze do krzesła. Etap 3: pełny pistol bez pomocy.',
   tip: 'Wymaga elastyczności kostki i bioder. Rozciągaj się codziennie!',
+  stages: ['Trzymaj ścianę', 'Opuszczaj do krzesła', 'Pełny pistol'],
 );
 
 // ── ĆWICZENIA – FAZA 3 ────────────────────────────────────────────────────────
@@ -207,6 +209,7 @@ const stojNaRekach = Exercise(
   muscles: 'Barki, tricepsy, rdzeń, równowaga',
   description: 'Stań plecami do ściany 20–30 cm, wejdź na ręce. Napnij całe ciało. Trzymaj jak najdłużej.',
   tip: 'Zacznij od 10s. Odsuń stopniowo stopy od ściany. Cel długoterminowy: freestanding handstand.',
+  stages: ['Stopy blisko ściany', 'Stopy oddalone od ściany', 'Freestanding (bez ściany)'],
 );
 
 const pistolSit = Exercise(
@@ -228,6 +231,7 @@ const muscleUpProg = Exercise(
   muscles: 'Cały grzbiet, klatka, barki, tricepsy',
   description: 'Etap 1: eksplozywne podciągnięcia powyżej drążka. Etap 2: eksplozywny chin-up + przejście w dip. Etap 3: pełny muscle-up.',
   tip: 'Wymaga minimum 10 solidnych podciągnięć. Kluczowy ruch: false grip (nadgarstek na drążku).',
+  stages: ['Eksplozywne podciągnięcia', 'Chin-up + przejście w dip', 'Pełny muscle-up'],
 );
 
 // ── HARMONOGRAM ───────────────────────────────────────────────────────────────

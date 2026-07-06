@@ -8,11 +8,13 @@ class AppState extends ChangeNotifier {
   static const _keyWorkouts = 'workouts';
   static const _keyWeights = 'weights';
   static const _keyMeasurements = 'measurements';
+  static const _keyStages = 'exercise_stages';
 
   DateTime? _startDate;
   List<WorkoutRecord> _workouts = [];
   List<WeightRecord> _weights = [];
   List<MeasurementRecord> _measurements = [];
+  Map<String, int> _exerciseStages = {};
 
   DateTime? get startDate => _startDate;
   List<WorkoutRecord> get workouts => List.unmodifiable(_workouts);
@@ -78,6 +80,15 @@ class AppState extends ChangeNotifier {
   MeasurementRecord? get latestMeasurement => _measurements.isEmpty ? null : _measurements.last;
   MeasurementRecord? get firstMeasurement => _measurements.isEmpty ? null : _measurements.first;
 
+  int getExerciseStage(String exerciseName) => _exerciseStages[exerciseName] ?? 0;
+
+  Future<void> setExerciseStage(String exerciseName, int stage) async {
+    _exerciseStages[exerciseName] = stage;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyStages, jsonEncode(_exerciseStages));
+    notifyListeners();
+  }
+
   int get workoutsThisWeek {
     if (_startDate == null) return 0;
     final weekStart = _startDate!.add(Duration(days: (currentWeek - 1) * 7));
@@ -111,6 +122,11 @@ class AppState extends ChangeNotifier {
     _measurements = measurementsJson
         .map((s) => MeasurementRecord.fromJson(jsonDecode(s) as Map<String, dynamic>))
         .toList();
+    final stagesStr = prefs.getString(_keyStages);
+    if (stagesStr != null) {
+      final raw = jsonDecode(stagesStr) as Map<String, dynamic>;
+      _exerciseStages = raw.map((k, v) => MapEntry(k, (v as num).toInt()));
+    }
     notifyListeners();
   }
 
@@ -150,11 +166,13 @@ class AppState extends ChangeNotifier {
     _workouts = [];
     _weights = [];
     _measurements = [];
+    _exerciseStages = {};
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyStartDate);
     await prefs.remove(_keyWorkouts);
     await prefs.remove(_keyWeights);
     await prefs.remove(_keyMeasurements);
+    await prefs.remove(_keyStages);
     notifyListeners();
   }
 }
