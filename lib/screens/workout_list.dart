@@ -7,25 +7,84 @@ import 'active_workout.dart';
 class WorkoutListScreen extends StatelessWidget {
   const WorkoutListScreen({super.key});
 
+  List<int> _weeksToShow(int currentWeek) {
+    if (currentWeek <= 6) return List.generate(6, (i) => i + 1);
+    if (currentWeek <= 12) return List.generate(6, (i) => i + 7);
+    final cycleStart = ((currentWeek - 13) ~/ 12) * 12 + 13;
+    return List.generate(12, (i) => cycleStart + i);
+  }
+
+  String _phaseLabel(int phase, int currentWeek) {
+    if (phase == 1) return 'Faza 1 – Podstawy  (tyg. 1–6)';
+    if (phase == 2) return 'Faza 2 – Zaawansowana  (tyg. 7–12)';
+    final cycle = (currentWeek - 13) ~/ 12 + 1;
+    final cycleStart = ((currentWeek - 13) ~/ 12) * 12 + 13;
+    return 'Faza 3 – Elitarna  · cykl $cycle  (tyg. $cycleStart–${cycleStart + 11})';
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
+    final weeks = _weeksToShow(state.currentWeek);
+    final phase = state.currentPhase;
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            const SliverToBoxAdapter(
+            SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text('Program treningowy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                child: Text('Program treningowy', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00C853).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFF00C853), width: 1),
+                      ),
+                      child: Text('Faza $phase', style: const TextStyle(color: Color(0xFF00C853), fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(_phaseLabel(phase, state.currentWeek),
+                          style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (phase > 1)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1E1E),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      phase == 2
+                          ? 'Faza 1 ukończona  ·  Fazy poprzednie dostępne po zmianie w Postępach'
+                          : 'Fazy 1 i 2 ukończone  ·  Fazy poprzednie dostępne po zmianie w Postępach',
+                      style: const TextStyle(color: Colors.white38, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (ctx, weekIdx) => _WeekSection(week: weekIdx + 1, currentWeek: state.currentWeek, currentDow: state.currentDayOfWeek),
-                childCount: 6,
+                (ctx, i) => _WeekSection(week: weeks[i], currentWeek: state.currentWeek, currentDow: state.currentDayOfWeek),
+                childCount: weeks.length,
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
